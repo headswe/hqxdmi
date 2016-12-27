@@ -6,6 +6,7 @@ using Hjg.Pngcs.Chunks;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,7 @@ namespace SS13to64x.DMI
             DmiName = Path.GetFileNameWithoutExtension(file);
             using (var stream = File.OpenRead(file))
             {
-                var imageData = new FreeImageBitmap(stream);
+                var imageData = new FreeImageBitmap(stream,FREE_IMAGE_FORMAT.FIF_PNG);
                 var lines = new Queue<String>(imageData.Metadata.List[0].List[0].Value.ToString().Split('\n'));
                 var start = lines.Dequeue();
                 if (start != "# BEGIN DMI")
@@ -102,12 +103,7 @@ namespace SS13to64x.DMI
         private List<float> GetIntList(string dequeue)
         {
             var arr = GetValue(dequeue).Split(',');
-            var list = new List<float>();
-            foreach (var s in arr)
-            {
-                list.Add(float.Parse(s));
-            }
-            return list;
+            return arr.Select(s => float.Parse(s, CultureInfo.InvariantCulture)).ToList();
         }
 
         private void ReadVersion(Queue<string> lines)
